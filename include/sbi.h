@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 struct sbiret {
@@ -51,6 +52,14 @@ struct sbiret {
    hartid is out of range, else 0. */
 int sbi_hartmask_add(unsigned long *hart_mask, unsigned long hart_mask_base,
 					 unsigned long hartid);
+
+extern struct sbi_extensions {
+	bool timer, ipi, rfence, hsm, srst, pmu, dbcn, susp, cppc, nacl, sta, sse,
+		fwft, dbtr, mpxy;
+} sbi_capabilities;
+
+/* To be called to get capabilities of SBI firmware */
+void sbi_init(void);
 
 // Base Extension
 
@@ -113,6 +122,13 @@ struct sbiret sbi_hart_suspend(uint32_t suspend_type, unsigned long resume_addr,
 							   unsigned long opaque);
 
 // System Reset Extension "SRST"
+
+#define SBI_SRST_TYPE_SHUTDOWN 0
+#define SBI_SRST_TYPE_COLD_REBOOT 1
+#define SBI_SRST_TYPE_WARM_REBOOT 2
+
+#define SBI_SRST_REASON_NO_REASON 0
+#define SBI_SRST_REASON_SYSFAIL 1
 
 struct sbiret sbi_system_reset(uint32_t reset_type, uint32_t reset_reason);
 

@@ -3,23 +3,24 @@ OVMF_URL := 'https://github.com/osdev0/edk2-ovmf-nightly/releases/latest/downloa
 
 SRC_DIR := src
 BUILD_DIR := build
+OBJ_DIR := $(BUILD_DIR)/obj
 TARGET := $(BUILD_DIR)/kernel.elf
 
 LINK_SCRIPT := $(SRC_DIR)/link.ld
-SRCS := $(wildcard $(SRC_DIR)/*.c)
-OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/obj/%.o,$(SRCS))
+SRCS := $(shell find $(SRC_DIR) -type f -name '*.c')
+OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
 
 CC := clang
 CFLAGS := -target riscv64-unknown-elf -Wall -Werror -Wextra -g -ffreestanding -nostdlib -Iinclude
 
 kernel: $(TARGET)
 
-$(BUILD_DIR)/obj/%.o: $(SRC_DIR)/%.c
-	mkdir -p $(BUILD_DIR)/obj
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TARGET): $(OBJS) $(LINK_SCRIPT)
-	$(CC) -T $(LINK_SCRIPT) $(CFLAGS) $^ -o $@
+	$(CC) -T $(LINK_SCRIPT) $(CFLAGS) $(OBJS) -o $@
 
 clean:
 	rm -rf $(BUILD_DIR)
@@ -40,8 +41,8 @@ disk: ${BUILD_DIR}/disk/EFI/BOOT/BOOTRISCV64.EFI misc/limine.conf ${TARGET}
 	cp ${TARGET} $(BUILD_DIR)/disk/
 
 run: disk ${BUILD_DIR}/ovmf-code-riscv64.fd
-	qemu-system-riscv64 -M virt -nographic -smp 4 \
+	qemu-system-riscv64 -M virt -smp 4 -m 2G -nographic \
 	-drive if=pflash,file=${BUILD_DIR}/ovmf-code-riscv64.fd,format=raw,unit=0 \
-	-drive file=fat:rw:$(BUILD_DIR)/disk/,format=raw -s -S
+	-drive file=fat:rw:$(BUILD_DIR)/disk/,format=raw
 
 .PHONY: kernel clean run disk

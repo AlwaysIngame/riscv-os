@@ -38,6 +38,25 @@
 #define SBI_EXT_DBTR 0x44425452
 #define SBI_EXT_MPXY 0x4d505859
 
+struct sbi_extensions sbi_capabilities;
+
+void sbi_init(void) {
+	sbi_capabilities.timer = sbi_probe_extension(SBI_EXT_TIME).uvalue != 0;
+	sbi_capabilities.ipi = sbi_probe_extension(SBI_EXT_IPI).uvalue != 0;
+	sbi_capabilities.rfence = sbi_probe_extension(SBI_EXT_RFENCE).uvalue != 0;
+	sbi_capabilities.hsm = sbi_probe_extension(SBI_EXT_HSM).uvalue != 0;
+	sbi_capabilities.srst = sbi_probe_extension(SBI_EXT_SRST).uvalue != 0;
+	sbi_capabilities.pmu = sbi_probe_extension(SBI_EXT_PMU).uvalue != 0;
+	sbi_capabilities.dbcn = sbi_probe_extension(SBI_EXT_DBCN).uvalue != 0;
+	sbi_capabilities.susp = sbi_probe_extension(SBI_EXT_SUSP).uvalue != 0;
+	sbi_capabilities.cppc = sbi_probe_extension(SBI_EXT_CPPC).uvalue != 0;
+	sbi_capabilities.nacl = sbi_probe_extension(SBI_EXT_NACL).uvalue != 0;
+	sbi_capabilities.sta = sbi_probe_extension(SBI_EXT_STA).uvalue != 0;
+	sbi_capabilities.sse = sbi_probe_extension(SBI_EXT_SSE).uvalue != 0;
+	sbi_capabilities.fwft = sbi_probe_extension(SBI_EXT_FWFT).uvalue != 0;
+	sbi_capabilities.dbtr = sbi_probe_extension(SBI_EXT_DBTR).uvalue != 0;
+	sbi_capabilities.mpxy = sbi_probe_extension(SBI_EXT_MPXY).uvalue != 0;
+}
 int sbi_hartmask_add(unsigned long *hart_mask, unsigned long hart_mask_base,
 					 unsigned long hartid) {
 	if (hartid >= (8 * sizeof(unsigned long)) + hart_mask_base) return -1;

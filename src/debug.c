@@ -16,9 +16,8 @@ void debug_print_kstr(const char *s, unsigned long len) {
 noreturn void early_panic(const char *s) {
 	debug_print_kstr(s, strlen(s));
 
-	if (sbi_capabilities.srst) {
+	if (sbi_capabilities.srst)
 		sbi_system_reset(SBI_SRST_TYPE_SHUTDOWN, SBI_SRST_REASON_NO_REASON);
-	}
 
 	while (1);
 }

@@ -10,8 +10,6 @@ extern struct limine_executable_cmdline_request executable_cmdline_request;
 
 extern struct limine_hhdm_request hhdm_request;
 
-extern struct limine_paging_mode_request paging_mode_request;
-
 extern struct limine_executable_address_request executable_address_request;
 
 #define LIMINE_HHDM_VTOP(addr) \

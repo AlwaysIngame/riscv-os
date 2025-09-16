@@ -1,6 +1,6 @@
 /* kernel.ld */
 
-ENTRY(kmain)
+ENTRY(init)
 
 SECTIONS {
     . = 0xffffffff80000000;

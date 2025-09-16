@@ -1,4 +1,4 @@
-BOOTLOADER_URL := 'https://codeberg.org/Limine/Limine/raw/branch/v9.x-binary/BOOTRISCV64.EFI'
+BOOTLOADER_URL := 'https://codeberg.org/Limine/Limine/raw/branch/v10.x-binary/BOOTRISCV64.EFI'
 OVMF_URL := 'https://github.com/osdev0/edk2-ovmf-nightly/releases/latest/download/ovmf-code-riscv64.fd'
 
 SRC_DIR := src

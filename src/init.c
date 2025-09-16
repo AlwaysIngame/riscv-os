@@ -6,7 +6,7 @@
 #include "limine/features.h"
 #include "sbi.h"
 
-void kmain() {
+void init(void) {
 	int i;
 	i = 4;
 	i = i + 1;

@@ -2,22 +2,61 @@
 
 #include <stdint.h>
 
-#include "limine/features.h"
+#include "limine/boot.h"
 #include "sbi.h"
 #include "string.h"
 
 void debug_print_kstr(const char *s, unsigned long len) {
-	if (!sbi_capabilities.dbcn) return;
+	if (!s || len == 0)
+		return;
 
-	unsigned long addr = (uintptr_t)LIMINE_EXE_VTOP(s);
-	sbi_debug_console_write(len, addr & ((1ul << 32) - 1), addr >> 32);
+	if (sbi_has_dbcn()) {
+		void *phys = limine_exe_vtop(s);
+		unsigned long written = 0;
+		while (written < len) {
+			struct sbiret ret = sbi_debug_console_write(
+				len - written,
+				(unsigned long)phys + written,
+				0
+			);
+			if (ret.error == SBI_SUCCESS && ret.uvalue > 0) {
+				written += ret.uvalue;
+			} else if (ret.error == SBI_SUCCESS && ret.uvalue == 0) {
+				sbi_debug_console_write_byte((uint8_t)s[written]);
+				written++;
+			} else {
+				/* Write failed, fall back to write_byte for remaining */
+				while (written < len) {
+					sbi_debug_console_write_byte((uint8_t)s[written]);
+					written++;
+				}
+				break;
+			}
+		}
+		return;
+	}
+
+	/* Fall back to legacy console putchar if DBCN is not supported */
+	for (unsigned long i = 0; i < len; i++) {
+		sbi_console_putchar((int)s[i]);
+	}
 }
 
 noreturn void early_panic(const char *s) {
-	debug_print_kstr(s, strlen(s));
+	if (s) {
+		debug_print_kstr(s, strlen(s));
+	}
 
-	if (sbi_capabilities.srst)
-		sbi_system_reset(SBI_SRST_TYPE_SHUTDOWN, SBI_SRST_REASON_NO_REASON);
+	/* Attempt system shutdown using SRST extension if available */
+	if (sbi_has_srst()) {
+		sbi_system_reset(SBI_SRST_RESET_TYPE_SHUTDOWN, SBI_SRST_RESET_REASON_SYS_FAILURE);
+	}
 
-	while (1);
+	/* Fallback to legacy shutdown if SRST not supported or failed */
+	sbi_shutdown();
+
+	/* Spin if system shutdown is not supported */
+	while (1) {
+		__asm__ volatile("wfi");
+	}
 }

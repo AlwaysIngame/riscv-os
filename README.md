@@ -8,7 +8,8 @@ It is designed to be booted using the [Limine bootloader](https://limine-bootloa
 You will need:
 - LLVM and `clang` with RISC-V cross-compilation support (`-target riscv64-unknown-elf`)
 - `make`
-- `wget`
+- `curl`
+- `tar`
 - `qemu-system-riscv64`
 
 To build the kernel:

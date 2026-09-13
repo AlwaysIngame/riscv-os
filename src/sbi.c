@@ -587,7 +587,7 @@ struct sbiret sbi_mpxy_get_notification_events(uint32_t channel_id) {
 /* SBI Driver Lifecycle and Management                                       */
 /* ========================================================================= */
 
-#define SBI_DYNAMIC_CACHE_SIZE 16
+constexpr size_t SBI_DYNAMIC_CACHE_SIZE = 16;
 
 struct sbi_ext_cache_entry {
 	long eid;

@@ -11,7 +11,7 @@ SRCS := $(shell find $(SRC_DIR) -type f -name '*.c')
 OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
 
 CC := clang
-CFLAGS := -target riscv64-unknown-elf -Wall -Werror -Wextra -g -O3 -flto -ffreestanding -nostdlib -Iinclude
+CFLAGS := -target riscv64-unknown-elf -std=c23 -Wall -Werror -Wextra -g -O3 -flto -ffreestanding -nostdlib -Iinclude
 LDFLAGS := -fuse-ld=lld -flto
 
 kernel: $(TARGET)

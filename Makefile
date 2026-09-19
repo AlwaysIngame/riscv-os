@@ -9,9 +9,10 @@ TARGET := $(BUILD_DIR)/kernel.elf
 LINK_SCRIPT := $(SRC_DIR)/link.ld
 SRCS := $(shell find $(SRC_DIR) -type f -name '*.c')
 OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+DEPS := $(OBJS:.o=.d)
 
 CC := clang
-CFLAGS := -target riscv64-unknown-elf -std=c23 -Wall -Werror -Wextra -g -O3 -flto -ffreestanding -nostdlib -Iinclude
+CFLAGS := -target riscv64-unknown-elf -std=c23 -Wall -Werror -Wextra -g -O3 -flto -ffreestanding -nostdlib -Iinclude -MMD -MP
 LDFLAGS := -fuse-ld=lld -flto
 
 kernel: $(TARGET)
@@ -22,6 +23,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 $(TARGET): $(OBJS) $(LINK_SCRIPT)
 	$(CC) -T $(LINK_SCRIPT) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $@
+
+-include $(DEPS)
 
 clean:
 	rm -rf $(BUILD_DIR)

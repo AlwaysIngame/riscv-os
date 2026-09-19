@@ -1,13 +1,16 @@
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "limine/limine.h"
 
 extern volatile uint64_t limine_base_revision[3];
 
+/* Verifies that the bootloader responded to all registered Limine requests. */
+bool limine_verify_requests(void);
+
 struct limine_memmap_response* limine_get_memmap(void);
-uint64_t limine_get_hhdm_offset(void);
 
 /* Translates a physical address to a virtual address in the Higher Half Direct
    Map. NOTE: Only regions mapped into HHDM (Usable, Bootloader Reclaimable,
